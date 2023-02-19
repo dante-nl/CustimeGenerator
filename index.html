@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Custime Generator</title>
+
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="Dependencies/coloris.min.css"/>
+	<script src="Dependencies/coloris.min.js"></script>
+	<script src="Dependencies/jquery.min.js"></script>
+	<script src="https://kit.fontawesome.com/ee422b4c3c.js" crossorigin="anonymous"></script>
+</head>
+<body onload="loaded()">
+	<h1 class="title">Custime Generator</h1>
+	<h2 class="subtitle">Easily generate a custime!</h2>
+
+	<div class="switch-wrapper">
+		<h3>Gradient background</h3>
+		<label class="switch">
+			<input type="checkbox" id="GradientToggle">
+			<span class="slider"></span>
+		</label>
+	</div>
+	<div class="switch-wrapper">
+		<h3>Image background</h3>
+		<label class="switch">
+			<input type="checkbox" id="ImageToggle">
+			<span class="slider"></span>
+		</label>
+	</div>
+
+	<hr>
+
+	<div class="text">
+		<p>I'd like a custime with <span id="background"></span> and <span id="textcolor"></span> as text color. I'd like <span id="font"><select id="styleFont"></select></span> as the font.</p>
+	</div>
+
+	<a class="button" href="javascript:openCustime()">
+		<i class="fa-solid fa-arrow-up-right-from-square"></i>
+		Open in Custime
+	</a>
+ <br>
+
+	<script>
+		// Font selector and loading from Google Fonts
+		function SetFonts(fonts) { 
+			for (var i = 0; i < fonts["items"].length; i++) {      
+				$('#styleFont')
+					.append($("<option></option>")
+					.attr("value", fonts.items[i].family)
+					.text(fonts.items[i].family));
+			}
+			var select = document.getElementById("styleFont")
+			font = select.options[select.selectedIndex].text = "Open Sans"
+		}
+		var script = document.createElement('script');
+		script.src = 'https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyAsA9lxzpap2OPlyiXXzcR4QY-igcPouFs&callback=SetFonts';
+		document.body.appendChild(script);
+
+
+		function isValidUrl(url) {
+			// Regular expression to match http and https URLs
+			var urlPattern = /^(http|https):\/\/([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/;
+			return urlPattern.test(url);
+		}
+
+		function loaded() {
+			if(localStorage.getItem("gradient")) {
+				document.getElementById("GradientToggle").checked = true
+				document.getElementById("ImageToggle").disabled = true
+
+				bgcolor = "577399,fe5f55,123"
+				textcolor = "6cbd9f"
+				font = "Open+Sans"
+			} else if (localStorage.getItem("image")) {
+				document.getElementById("ImageToggle").checked = true
+				document.getElementById("GradientToggle").disabled = true
+				bgcolor = "https://via.placeholder.com/1500?text=Placeholder"
+				textcolor = "6cbd9f"
+				font = "Open+Sans"
+			} else {
+				bgcolor = "577399"
+				textcolor = "6cbd9f"
+				font = "Open+Sans"
+			}
+
+			document.getElementById("textcolor").innerHTML = `<span><input type="text" value="#6cbd9f" data-coloris id="text-color"></span>`
+			loadForm() 
+		}
+
+		document.getElementById("GradientToggle").addEventListener('change', function () { toggleGradient() });
+		function toggleGradient() {
+			if(!localStorage.getItem("gradient")) {
+				// Gradients disabled
+				localStorage.setItem("gradient", true)
+				localStorage.removeItem("image")
+				document.getElementById("ImageToggle").disabled = true
+			} else {
+				// Gradients enabled
+				localStorage.removeItem("gradient")
+				document.getElementById("ImageToggle").disabled = false
+			}
+			loadForm()
+		}
+
+		document.getElementById("ImageToggle").addEventListener('change', function () { toggleImage() });
+		function toggleImage() {
+			if(!localStorage.getItem("image")) {
+				// Images disabled
+				localStorage.setItem("image", true)
+				localStorage.removeItem("gradient")
+				document.getElementById("GradientToggle").disabled = true
+			} else {
+				// Images enabled
+				localStorage.removeItem("image")
+				document.getElementById("GradientToggle").disabled = false
+			}
+			loadForm()
+		}
+
+		loaded();
+		function loadForm() {
+			if(localStorage.getItem("gradient") == null && localStorage.getItem("image") == null) {
+				// Simple color picker
+				document.getElementById("background").innerHTML = `
+				<span><input type="text" value="#577399" data-coloris id="bg-color-primary"></span> as background color`
+			} else if (localStorage.getItem("gradient") != null && localStorage.getItem("image") == null) {
+				// Gradient picker
+				document.getElementById("background").innerHTML = `
+				<span><input type="text" value="#577399" data-coloris id="bg-color-primary"></span> and <span><input type="text" value="#FE5F55"data-coloris id="bg-color-secondary"></span> as background gradient, 
+				rotated <input id='hardinput' type='number' max='360' min='0' value='123'> degrees`
+			} else {
+				// URL
+				document.getElementById("background").innerHTML = `
+				<span><input type="text" id="bg-color-primary" placeholder="https://example.com/example.img"></span> as background image`
+			}
+
+			const bgPrimaryInput = document.getElementById('bg-color-primary');
+			bgPrimaryInput.addEventListener('input', function() {
+				bgChange1();
+			});
+
+			const bgSecondaryInput = document.getElementById('bg-color-secondary')
+			if(bgSecondaryInput) {
+				bgSecondaryInput.addEventListener('input', function() {
+					document.getElementById("bg-color-primary").style.background = "#fff"
+					bgcolor = document.getElementById("bg-color-primary").value.replace("#", "")+","
+						+document.getElementById("bg-color-secondary").value.replace("#", "")+","
+						+document.getElementById("hardinput").value
+				});
+			}
+
+			const hardinput = document.getElementById('hardinput');
+			if(hardinput) {
+				hardinput.addEventListener("input", function(event) {
+					hardInputChange(event)
+				});
+			}
+
+			const textcolor = document.getElementById("text-color")
+			textcolor.addEventListener("input", function(event) {
+				colorChange()
+			})
+
+			const fontselector = document.getElementById("styleFont")
+			fontselector.addEventListener("change", function(event) {
+				fontChange()
+			})
+
+
+			Coloris({
+				alpha: false
+			});
+		}
+
+		// Primary change. This can be either a color or URL
+		function bgChange1() {
+			if(localStorage.getItem("gradient") == null && localStorage.getItem("image") == null) {
+				// Simple color picker
+				document.getElementById("bg-color-primary").style.background = "#fff"
+				bgcolor = document.getElementById("bg-color-primary").value.replace("#", "")
+
+			} else if (localStorage.getItem("gradient") != null && localStorage.getItem("image") == null) {
+				// Gradient picker
+				document.getElementById("bg-color-primary").style.background = "#fff"
+				bgcolor = document.getElementById("bg-color-primary").value.replace("#", "")+","
+					+document.getElementById("bg-color-secondary").value.replace("#", "")+","
+					+document.getElementById("hardinput").value
+			} else {
+				// URL
+				if(isValidUrl(document.getElementById("bg-color-primary").value)) {
+					bgcolor = document.getElementById("bg-color-primary").value
+					document.getElementById("bg-color-primary").style.background = "#55FE8C35"
+				} else {
+					document.getElementById("bg-color-primary").style.background = "#FE5F5535"
+				}
+			}
+		}
+
+		// Text color change
+		function colorChange() {
+			textcolor = document.getElementById("text-color").value.replace("#", "")
+		}
+
+		// Font change
+		function fontChange() {
+			var select = document.getElementById("styleFont")
+			font = select.options[select.selectedIndex].text.replace(" ", "+")
+		}
+		// The degrees
+		function hardInputChange(e) {
+			var inputValue = e.target.value;
+			// check if input value is greater than 100
+			if (inputValue > 360) {
+				inputValue = 360;
+			}
+			// Math.floor to remove decimal
+			inputValue = Math.floor(inputValue);
+			// update the value of the input element
+			e.target.value = inputValue;
+
+			if (inputValue < 0) {
+				inputValue = 0
+			}
+		}
+
+		function openCustime() {
+			if(isValidUrl(bgcolor)) {
+				window.open(`https://custi.me?customfont=${font}&time=24&textcolor=${textcolor}&bgurl=${btoa(bgcolor)}`)
+			} else {
+				window.open(`https://custi.me?customfont=${font}&time=24&textcolor=${textcolor}&bgcolor=${bgcolor}`)
+			}
+		}
+
+	</script>
+</body>
+</html>

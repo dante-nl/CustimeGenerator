@@ -1,0 +1,248 @@
+@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&family=Source+Code+Pro&display=swap');
+/* Fonts from Google Fonts.
+Fonts used:
+• Source Code Pro
+• Atkinson Hyperlegible
+https://fonts.google.com/share?selection.family=Atkinson%20Hyperlegible%7CSource%20Code%20Pro
+
+Color palette: https://coolors.co/495867-577399-bdd5ea-f7f7ff-fe5f55 */
+
+:root {
+	--background-color: #F7F7FF;
+
+	--title-color: #577399;
+	--accent: #FE5F55;
+
+	--text-primary: #495867;
+	--text-secondary: #F7F7FF;
+
+	--font-primary: 'Atkinson Hyperlegible', sans-serif;
+	--font-secondary: 'Source Code Pro', monospace;
+
+	--margins: 20vw
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--background-color: #495867;
+		
+		--title-color: #BDD5EA;
+		--accent: #FE5F55;
+	
+		--text-primary: #F7F7FF;
+		--text-secondary: #495867;
+
+		--font-primary: 'Atkinson Hyperlegible', sans-serif;
+		--font-secondary: 'Source Code Pro', monospace;
+
+		--margins: 20vw
+	}
+}
+
+@media (max-width: 960px) {
+	:root {
+		--margins: 0vw
+	}
+}
+
+/** General styles */
+body {
+	color: var(--text-primary);
+	background-color: var(--background-color);
+	font-family: var(--font-primary);
+	margin-left: var(--margins);
+	margin-right: var(--margins);
+}
+
+h1 {
+	font-family: var(--font-secondary);
+	color: var(--title-color);
+	text-align: center;
+	font-size: 3rem;;
+}
+
+.subtitle {
+	font-size: 2rem;
+	text-align: center;
+	color: var(--title-color)
+}
+
+/** Toggle switches */
+.switch-wrapper {
+	margin-bottom: 3px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	border-radius: 8px;
+	transition: box-shadow 0.3s ease-in-out;
+	transition: transform .2s;
+}
+
+.switch-wrapper:hover {
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+	transform: scale(1.01);
+	background: var(--brand-color-b-transparent) !important;
+}
+
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 60px;
+	height: 34px;
+	margin-left: 5px;
+}
+
+.switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	-webkit-transition: .4s;
+	transition: .4s;
+	border-radius: 34px;
+}
+
+.slider:before {
+	position: absolute;
+	content: "";
+	height: 26px;
+	width: 26px;
+	left: 4px;
+	bottom: 4px;
+	background-color: white;
+	-webkit-transition: .4s;
+	transition: .4s;
+	border-radius: 50%;
+
+}
+
+input:checked+.slider {
+	background-color: var(--accent);
+}
+
+input:focus+.slider {
+	box-shadow: 0 0 1px var(--accent);
+}
+
+input:disabled+.slider {
+	background-color: var(--title-color);
+}
+
+input:disabled+.slider:before {
+	-webkit-transform: translateX(13px) !important;
+	-ms-transform: translateX(13px) !important;
+	transform: translateX(13px) !important;
+}
+
+input:checked+.slider:before {
+	-webkit-transform: translateX(26px);
+	-ms-transform: translateX(26px);
+	transform: translateX(26px);
+}
+
+/** Form things  */
+input[type=text] {
+	border: 1px solid var(--accent);
+	border-radius: 8px;
+	padding: 10px 12px;
+	font-weight: 400;
+	letter-spacing: .5px;
+	min-width: 100px;
+}
+
+input[type=text]:active {
+	border: 1px solid var(--accent);
+}
+
+input[type=submit] {
+	-webkit-transition: background-color .2s ease-out;
+	-moz-transition: background-color .2s ease-out;
+	-o-transition: background-color .2s ease-out;
+	transition: background-color .2s ease-out;
+	background-color: var(--accent);
+	border-radius: 8px;
+	padding: 8px 12px;
+	text-align: center;
+	border: 0px;
+	color: white;
+	font-size: large;
+}
+
+input[type=submit]:active {
+	/* background-color: #0e6e8e; */
+	background-color: var(--accent);
+}
+
+input[type=submit]:hover {
+	/* background-color: #0e6e8e; */
+	background-color: var(--accent);
+}
+
+input[type=submit]:disabled {
+	background-color: var(--title-color);
+}
+
+input[type=number] {
+	border: 1px solid var(--accent);
+	border-radius: 8px;
+	padding: 10px 12px;
+	font-weight: 400;
+	letter-spacing: .5px;
+	min-width: 10px;
+}
+
+input[type=number]:active {
+	border: 1px solid var(--accent);
+}
+
+select {
+	border: 1px solid var(--accent);
+	border-radius: 8px;
+	padding: 10px 12px;
+	font-weight: 400;
+	letter-spacing: .5px;
+	min-width: 10px;
+}
+
+select:active {
+	border: 1px solid var(--accent);
+}
+
+/** Buttons  */
+.button {
+	-webkit-transition: background-color .2s ease-out;
+	-moz-transition: background-color .2s ease-out;
+	-o-transition: background-color .2s ease-out;
+	transition: background-color .2s ease-out;
+	background-color: var(--accent);
+	border-radius: 8px;
+	padding: 8px 12px;
+	text-align: center;
+	border: 0px;
+	color: white;
+	font-size: large;
+	text-decoration: none;
+}
+
+.button:active {
+	/* background-color: #0e6e8e; */
+	background-color: var(--title-color);
+}
+
+.button:hover {
+	/* background-color: #0e6e8e; */
+	background-color: var(--title-color);
+}
+
+.button:disabled {
+	background-color: #ccc;
+}
